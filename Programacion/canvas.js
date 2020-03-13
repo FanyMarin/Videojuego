@@ -1,6 +1,7 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let frames = 0;
+let platforms = [];
 let timerId;
 let audio = new Audio();
 audio.src =
@@ -19,6 +20,23 @@ let sprites = {
     height: 321
   }
 };
+
+//Construyendo el escenario
+class Background {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.width = canvas.width;
+    this.height = canvas.height;
+    //     this.image = new Image();
+    //     this.image.src = "./Images/backround1.jpg"
+    // }
+
+    // draw(){
+    //     ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+    // }
+  }
+}
 
 //Construyendo al personaje
 class Pikachu {
@@ -49,41 +67,74 @@ class Pikachu {
     );
     if (frames % 5 === 0) this.sx += 439;
   }
+
+  collision(item) {
+    return (
+      this.x < item.x + item.width &&
+      this.x + this.width > item.x &&
+      this.y < item.y + item.height &&
+      this.y + this.height > item.y
+    );
+  }
 }
 
-class Background {
-  constructor() {
-    this.x = 0;
-    this.y = 0;
-    this.width = canvas.width;
-    this.height = canvas.height;
-    //     this.image = new Image();
-    //     this.image.src = "./Images/backround1.jpg"
-    // }
+class Platform {
+  constructor(x, width) {
+    this.x = x;
+    this.y = canvas.height;
+    this.width = width;
+    this.height = 30;
+  }
 
-    // draw(){
-    //     ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
-    // }
+  draw() {
+    this.y -= 3;
+    ctx.fillStyle = "red";
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.fill();
   }
 }
 
 let pikachu = new Pikachu(90, 100, 100, 100);
 let backround = new Background();
+//let platform = new Platform(200,200);
+
+//HELPER FUNCTIONS
+function generatePlatforms() {
+  if (!(frames % 120 === 0)) return;
+
+  const width = Math.floor(Math.random() * (canvas.width * 0.2)) + 100;
+  const x = Math.floor(Math.random() * canvas.width) - 100;
+  const platform1 = new Platform(0, width);
+  const platform2 = new Platform(canvas.width, -width);
+  const platform3 = new Platform(x, width);
+  platforms = [...platforms, platform1, platform2, platform3];
+}
+
+function drawPlatforms() {
+  platforms.forEach((platform, index) => {
+    // if (platform.x < 0) {
+    //   return platform.splice(index, 1);
+    // }
+    platform.draw();
+
+    if (pikachu.collision(platform)) {
+      pikachu.y = platform.y - 100;
+    }
+  });
+}
 
 function animate() {
   frames++;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  generatePlatforms();
   // backround.draw();
   pikachu.draw();
-
+  drawPlatforms();
+  console.log(platforms);
   if (timerId) {
     timerId = requestAnimationFrame(animate);
   }
-
-  // requestAnimationFrame(animate);
-  // ctx.clearRect(0,0,canvas.width,canvas.height);
-  // pikachu.draw();
 }
 
 //Event listener
@@ -111,8 +162,8 @@ window.onload = () => {
         pikachu.y -= pikachu.height / 2;
       }
 
-      if (event.keyCode === down && pikachu.y <= canvas.height -100) {
-          pikachu.y += pikachu.height / 2;
+      if (event.keyCode === down && pikachu.y <= canvas.height - 100) {
+        pikachu.y += pikachu.height / 2;
       }
     });
     timerId = requestAnimationFrame(animate);
