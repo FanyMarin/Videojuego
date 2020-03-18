@@ -2,17 +2,19 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let frames = 0;
 let gravity = 0.1;
-let platforms = [];
-let timerId;
+let platforms1 = [];
+let platforms2 = [];
+let platforms3 = [];
+let requestId;
 let audio = new Audio();
-audio.src =
-  "https://www.youtube.com/watch?v=wR3gaYTqkDQ&list=RDwR3gaYTqkDQ&start_radio=1";
+audio.src = "./opening.mp3";
 audio.loop = true;
-// let jumping = true;
+const button = document.getElementById("start-button");
+ctx.font = "30px Avenir";
 
 //Para hacer el ancho y la altura del canvas igual al tama;o de la pantalla
-// canvas.width = window.innerWidth;
-// canvas.height = window.innerHeight;
+canvas.width = window.innerWidth - 50;
+canvas.height = window.innerHeight - 50;
 
 //para hacer la animacion de pikachu
 let sprites = {
@@ -55,18 +57,17 @@ class Background {
 class Pikachu {
   constructor(x, y, width, height) {
     this.image = new Image();
-    this.image.src = sprites.running.src;
+    // this.image.src = sprites.running.src;
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.sx = 0;
     this.sy = 0;
-    this.sw = sprites.running.width;
-    this.sh = sprites.running.height;
+    this.sw;
+    this.sh;
     //gravity
-    this.dy = 2;
-    this.jumping = false;
+    this.dy = 5;
   }
   draw() {
     this.y += this.dy + gravity;
@@ -85,22 +86,17 @@ class Pikachu {
     if (frames % 5 === 0) this.sx += 439;
   }
 
-  moveLeft() {}
-
-  moveRight() {}
-
-  jump() {}
-
   collision(item) {
     return (
       this.x < item.x + item.width &&
-      this.x + this.width > item.x &&
+      this.x + this.width - this.width * 0.35 > item.x &&
       this.y < item.y + item.height &&
       this.y + this.height > item.y
     );
   }
 }
 
+//Construyendo las plataformas
 class Platform {
   constructor(x, width) {
     this.x = x;
@@ -117,53 +113,103 @@ class Platform {
   }
 }
 
-let pikachu = new Pikachu(90, 100, 100, 100);
+let pikachu = new Pikachu(90, 100, 60, 50);
 let backround = new Background();
-//let platform = new Platform(200,200);
 
 //HELPER FUNCTIONS
-function generatePlatforms() {
-  if (!(frames % 120 === 0)) return;
+function generatePlatforms1() {
+  //Generate & draw platforms
+  if (!(frames % 70 === 0)) return;
+  const x = Math.floor(Math.random() * (canvas.width / 5));
+  const width1 = 200;
+  const platform1 = new Platform(x, width1);
+  platforms1 = [...platforms1, platform1];
+}
 
-  const width = Math.floor(Math.random() * (canvas.width * 0.2)) + 100;
-  const x = Math.floor(Math.random() * canvas.width) - 100;
-  const platform1 = new Platform(0, width);
-  const platform2 = new Platform(canvas.width, -width);
-  const platform3 = new Platform(x, width);
-  platforms = [...platforms, platform1, platform2, platform3];
+function generatePlatforms2() {
+  if (!(frames % 100 === 0)) return;
+  const x2 =
+    canvas.width / 5 + 200 + Math.floor(Math.random() * (canvas.width / 8));
+  const width2 = 200;
+  const platform2 = new Platform(x2, width2);
+  platforms2 = [...platforms2, platform2];
+}
 
-  //  if(frames%39===0){
-  //    return platforms = platform1;
-  //  } else if(frames%79===0){
-  //    return platforms = platform2;
-  //  } else if(frames%120 === 0){
-  //    return platforms = platform
-  //  }
+function generatePlatforms3() {
+  if (!(frames % 70 === 0)) return;
+  const x3 =
+    canvas.width / 1.5 + Math.floor(Math.random() * (canvas.width / 5));
+  const width3 = 200;
+  const platform3 = new Platform(x3, width3);
+  platforms3 = [...platforms3, platform3];
 }
 
 function drawPlatforms() {
-  platforms.forEach(platform => {
+  platforms1.forEach((platform, index) => {
+    if (platform.y < -30) {
+      return platforms1.splice(index, 1);
+    }
     platform.draw();
-
     if (pikachu.collision(platform)) {
-      pikachu.y = platform.y - 100;
+      pikachu.y = platform.y - pikachu.height;
+    } else {
+      pikachu.y = pikachu.y + 2;
     }
   });
 }
 
+function drawPlatforms2() {
+  platforms2.forEach((platform, index) => {
+    if (platform.y < -30) {
+      return platforms2.splice(index, 1);
+    }
+    platform.draw();
+    if (pikachu.collision(platform)) {
+      pikachu.y = platform.y - pikachu.height;
+    }
+  });
+}
+
+function drawPlatforms3() {
+  platforms3.forEach((platform, index) => {
+    if (platform.y < -30) {
+      return platforms3.splice(index, 1);
+    }
+    platform.draw();
+    if (pikachu.collision(platform)) {
+      pikachu.y = platform.y - pikachu.height;
+    }
+  });
+}
+
+//To start the game
 function animate() {
   frames++;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  generatePlatforms();
+  generatePlatforms1();
+  generatePlatforms2();
+  generatePlatforms3();
   backround.draw();
   pikachu.draw();
   controllerGame();
   drawPlatforms();
-  console.log(platforms);
+  drawPlatforms2();
+  drawPlatforms3();
+  if (!requestId) gameOver();
+  if (requestId) {
+    requestId = requestAnimationFrame(animate);
+  }
+}
 
-  if (timerId) {
-    timerId = requestAnimationFrame(animate);
+//Cuando se pierde el juego:
+function gameOver() {
+  if (pikachu.y == 0 || pikachu.y == canvas.height - pikachu.height) {
+    audio.pause();
+    button.disabled = false;
+    button.onclick = restart;
+    requestId = undefined;
+    ctx.fillText("Game Over", canvas.width / 2 - 300, canvas.height / 2);
   }
 }
 
@@ -171,16 +217,14 @@ function animate() {
 controller = {
   left: false,
   right: false,
-  up: false,
   keyListener: function(event) {
     var key_state = event.type == "keydown" ? true : false;
-
+    if (key_state == false) {
+      pikachu.image.src = "./Images/intento1-removebg-preview.png";
+    }
     switch (event.keyCode) {
       case 37: // left key
         controller.left = key_state;
-        break;
-      case 38: // up key
-        controller.up = key_state;
         break;
       case 39: // right key
         controller.right = key_state;
@@ -190,20 +234,17 @@ controller = {
 };
 
 function controllerGame() {
-  if (
-    controller.up /*&& pikachu.jumping == false*/ &&
-    pikachu.x > 0 + 30 &&
-    pikachu.collision(platform) == true
-  ) {
-    pikachu.y -= pikachu.height / 4;
-    // pikachu.jumping = true;
-  }
-
   if (controller.left && pikachu.x > 0 + 30) {
+    pikachu.image.src = "./Images/pikachuCorriendoIzq.png";
+    pikachu.sw = 439;
+    pikachu.sh = 321;
     pikachu.x -= pikachu.width / 4;
   }
 
   if (controller.right && pikachu.x < canvas.width - 100) {
+    pikachu.image.src = "./Images/pikachuCorriendoSprite.png";
+    pikachu.sw = 439;
+    pikachu.sh = 321;
     pikachu.x += pikachu.width / 4;
   }
 }
@@ -217,12 +258,13 @@ window.onload = () => {
   };
 
   function startGame() {
-    // controllerGame()
-    timerId = requestAnimationFrame(animate);
+    button.disabled = true;
+    audio.play();
+    requestId = requestAnimationFrame(animate);
   }
 };
 
 //Falta:
 // Arreglar que salga una sola plataforma a la vez
 // Cambiar de direccion a pikachu cuando se usen difentes comandos (usar un sprite por comando)
-// Que cuando no este sobre una plataforma, pikachu no pueda subir de forma random
+//No funciona la funcion gameOver, por que?
