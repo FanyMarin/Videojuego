@@ -5,12 +5,13 @@ let gravity = 0.1;
 let platforms1 = [];
 let platforms2 = [];
 let platforms3 = [];
+let tears = [];
+let points = 0;
 let requestId;
 let audio = new Audio();
 audio.src = "./Music/opening.mp3";
 audio.loop = true;
 const button = document.getElementById("start-button");
-ctx.font = "30px Avenir";
 
 //Para hacer el ancho y la altura del canvas igual al tama;o de la pantalla
 canvas.width = window.innerWidth;
@@ -68,7 +69,7 @@ class Pikachu {
   collision(item) {
     return (
       this.x < item.x + item.width &&
-      this.x + this.width - this.width * 0.35 > item.x &&
+      this.x + this.width - this.width * 0.5 > item.x &&
       this.y < item.y + item.height &&
       this.y + this.height > item.y
     );
@@ -92,14 +93,10 @@ class Platform {
   }
 }
 
-class Tears {
-  
-}
-
 class StartPlatform {
   constructor() {
-    this.x = canvas.width/2-canvas.width * 0.1;
-    this.y = canvas.height/1.05;
+    this.x = canvas.width / 2 - canvas.width * 0.1;
+    this.y = canvas.height / 1.05;
     this.width = canvas.width * 0.15;
     this.height = 30;
     this.image = new Image();
@@ -117,11 +114,53 @@ class StartPlatform {
   }
 }
 
+class Tears {
+  constructor(x, y) {
+    this.x = x;
+    this.y = canvas.height;
+    this.width = 25;
+    this.height = 25;
+    this.image = new Image();
+    this.image.src = "./Images/pokemonTear.png";
+  }
+
+  draw() {
+    this.y -= 3;
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  }
+}
+
 let startPlatform = new StartPlatform();
-let pikachu = new Pikachu(canvas.width/2-canvas.width * 0.1/2, canvas.height/1.05-50, 60, 50);
+let pikachu = new Pikachu(
+  canvas.width / 2 - (canvas.width * 0.1) / 2,
+  canvas.height / 1.05 - 50,
+  60,
+  50
+);
 let backround = new Background();
 
 //HELPER FUNCTIONS
+
+//Generate & draw tears
+function generateTears() {
+  if (!(frames % 240 === 0)) return;
+  const x = Math.floor(Math.random() * canvas.width) - 25;
+  const tear = new Tears(x);
+  tears = [...tears, tear];
+}
+
+function drawTears() {
+  tears.forEach((tear, index) => {
+    if (tear.y < -25) {
+      return tears.splice(index, 1);
+    }
+    tear.draw();
+    if (pikachu.collision(tear)) {
+      points += 1;
+      tear.x = -25;
+    }
+  });
+}
 
 //Generate & draw platforms
 
@@ -197,6 +236,7 @@ function animate() {
   generatePlatforms1();
   generatePlatforms2();
   generatePlatforms3();
+  generateTears();
   backround.draw();
   startPlatform.draw();
   pikachu.draw();
@@ -204,6 +244,12 @@ function animate() {
   drawPlatforms();
   drawPlatforms2();
   drawPlatforms3();
+  drawTears();
+
+  ctx.font = "40px Avenir";
+  ctx.fillStyle = "white";
+  ctx.fillText("Score:", canvas.width - 220, 100);
+  ctx.fillText(points, canvas.width - 100, 100);
   if (!requestId) gameOver();
   if (requestId) {
     requestId = requestAnimationFrame(animate);
@@ -223,6 +269,7 @@ function gameOver() {
 
 //Event listener
 controller = {
+  up: false,
   left: false,
   right: false,
   keyListener: function(event) {
@@ -233,6 +280,9 @@ controller = {
         break;
       case 39: // right key
         controller.right = key_state;
+        break;
+      case 38: // up key
+        controller.up = key_state;
         break;
     }
   }
@@ -258,6 +308,14 @@ function controllerGame() {
     pikachu.sw = 62.5;
     pikachu.sh = 46;
   }
+
+  if (controller.up) {
+    pikachu.image.src = "./Images/pikachuFront.png";
+    pikachu.sw = 62.5;
+    pikachu.sh = 46;
+    pikachu.y -= pikachu.height * 2;
+    controller.up = false;
+  }
 }
 
 window.addEventListener("keydown", controller.keyListener);
@@ -277,3 +335,4 @@ window.onload = () => {
 
 //Falta:
 //No funciona la funcion gameOver, por que?
+//como hacer para que pikachu no pueda seguir saltando?
