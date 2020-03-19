@@ -1,0 +1,66 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+@font-face{
+    font-family: Aquatico-Regular;
+    src: url("./Aquatico-Regular.otf")
+}
+
+.background{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+}
+
+.title {
+    color: white;
+    border-radius: 15px;
+    font-size: 50px;
+    font-family: "Aquatico-Regular";
+    position: relative;
+    margin-left: 0%;
+    padding: 5%;
+    text-shadow: 2px 2px orange;
+}
+
+.list {
+    list-style-type: none;
+    color: silver;
+    border-radius: 15px;
+    font-size: 20px;
+    font-family: "Aquatico-Regular";
+    position: relative;
+    text-decoration: none;
+    padding-left: 5%;
+    text-shadow: 3px 3px black;
+
+}
+
+.space{
+    padding-top: 5%;
+    padding-bottom: 5%;
+}
+
+.start{
+    color: white;
+    border-radius: 15px;
+    font-size: 30px;
+    font-family: "Aquatico-Regular";
+    position: absolute;
+    margin-left: 70%;
+    /* padding: 5%; */
+    text-shadow: 2px 2px orange; 
+}
+
+.home{
+    color: white;
+    border-radius: 15px;
+    font-size: 30px;
+    font-family: "Aquatico-Regular";
+    position: relative;
+    margin-left: 35%;
+    padding: 5%;
+    text-shadow: 2px 2px orange; 
+}

@@ -13,8 +13,8 @@ const button = document.getElementById("start-button");
 ctx.font = "30px Avenir";
 
 //Para hacer el ancho y la altura del canvas igual al tama;o de la pantalla
-canvas.width = window.innerWidth - 20;
-canvas.height = window.innerHeight - 20;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 //Construyendo el escenario
 class Background {
