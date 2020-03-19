@@ -50,7 +50,11 @@ class Pikachu {
     this.dy = 5;
   }
   draw() {
-    this.y += this.dy + gravity;
+    if (this.y > 0 && this.y + this.height < canvas.height) {
+      this.y += this.dy + gravity;
+    } else {
+      gameOver();
+    }
     if (this.sx > 240) this.sx = 0;
     ctx.drawImage(
       this.image,
@@ -159,6 +163,9 @@ function drawTears() {
       points += 1;
       tear.x = -25;
     }
+    if (points == 2) {
+      won();
+    }
   });
 }
 
@@ -228,6 +235,27 @@ function drawPlatforms3() {
   });
 }
 
+//Cuando se pierde el juego:
+
+function gameOver() {
+  audio.pause();
+  button.disabled = false;
+  // button.onclick = restart;
+  requestId = undefined;
+  ctx.font = "100px Avenir";
+  ctx.fillText("Game Over", canvas.width / 2 - 250, canvas.height / 2);
+}
+
+function won() {
+  audio.pause();
+  button.disabled = false;
+  // button.onclick = restart;
+  requestId = undefined;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.font = "100px Avenir";
+  ctx.fillText("You Won!", canvas.width / 2 - 250, canvas.height / 2);
+}
+
 //To start the game
 function animate() {
   frames++;
@@ -253,17 +281,6 @@ function animate() {
   if (!requestId) gameOver();
   if (requestId) {
     requestId = requestAnimationFrame(animate);
-  }
-}
-
-//Cuando se pierde el juego:
-function gameOver() {
-  if (pikachu.y == 0 || pikachu.y == canvas.height - pikachu.height) {
-    audio.pause();
-    button.disabled = false;
-    button.onclick = restart;
-    requestId = undefined;
-    ctx.fillText("Game Over", canvas.width / 2 - 300, canvas.height / 2);
   }
 }
 
