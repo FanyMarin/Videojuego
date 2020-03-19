@@ -7,35 +7,14 @@ let platforms2 = [];
 let platforms3 = [];
 let requestId;
 let audio = new Audio();
-audio.src = "./opening.mp3";
+audio.src = "./Music/opening.mp3";
 audio.loop = true;
 const button = document.getElementById("start-button");
 ctx.font = "30px Avenir";
 
 //Para hacer el ancho y la altura del canvas igual al tama;o de la pantalla
-canvas.width = window.innerWidth - 50;
-canvas.height = window.innerHeight - 50;
-
-//para hacer la animacion de pikachu
-let sprites = {
-  running: {
-    src: "./Images/pikachuCorriendoSprite.png",
-    width: 439,
-    height: 321
-  },
-
-  runningBackwards: {
-    src: "./Programacion/Images/pikachuCorriendoIzq.png",
-    width: 439,
-    height: 321
-  },
-
-  standing: {
-    src: "./Programacion/Images/pikachuStanding2.png",
-    width: 177,
-    height: 222
-  }
-};
+canvas.width = window.innerWidth - 20;
+canvas.height = window.innerHeight - 20;
 
 //Construyendo el escenario
 class Background {
@@ -45,7 +24,7 @@ class Background {
     this.width = canvas.width;
     this.height = canvas.height;
     this.image = new Image();
-    this.image.src = "./Images/VioletSky.png";
+    this.image.src = "./Images/movieBackground.png";
   }
 
   draw() {
@@ -57,7 +36,6 @@ class Background {
 class Pikachu {
   constructor(x, y, width, height) {
     this.image = new Image();
-    // this.image.src = sprites.running.src;
     this.x = x;
     this.y = y;
     this.width = width;
@@ -103,13 +81,13 @@ class Platform {
     this.y = canvas.height;
     this.width = width;
     this.height = 30;
+    this.image = new Image();
+    this.image.src = "./Images/platform.jpeg";
   }
 
   draw() {
     this.y -= 3;
-    ctx.fillStyle = "black";
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.fill();
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
   }
 }
 
@@ -117,11 +95,13 @@ let pikachu = new Pikachu(90, 100, 60, 50);
 let backround = new Background();
 
 //HELPER FUNCTIONS
+
+//Generate & draw platforms
+
 function generatePlatforms1() {
-  //Generate & draw platforms
   if (!(frames % 70 === 0)) return;
   const x = Math.floor(Math.random() * (canvas.width / 5));
-  const width1 = 200;
+  const width1 = canvas.width * 0.15;
   const platform1 = new Platform(x, width1);
   platforms1 = [...platforms1, platform1];
 }
@@ -130,7 +110,7 @@ function generatePlatforms2() {
   if (!(frames % 100 === 0)) return;
   const x2 =
     canvas.width / 5 + 200 + Math.floor(Math.random() * (canvas.width / 8));
-  const width2 = 200;
+  const width2 = canvas.width * 0.15;
   const platform2 = new Platform(x2, width2);
   platforms2 = [...platforms2, platform2];
 }
@@ -139,7 +119,7 @@ function generatePlatforms3() {
   if (!(frames % 70 === 0)) return;
   const x3 =
     canvas.width / 1.5 + Math.floor(Math.random() * (canvas.width / 5));
-  const width3 = 200;
+  const width3 = canvas.width * 0.15;
   const platform3 = new Platform(x3, width3);
   platforms3 = [...platforms3, platform3];
 }
@@ -219,9 +199,6 @@ controller = {
   right: false,
   keyListener: function(event) {
     var key_state = event.type == "keydown" ? true : false;
-    if (key_state == false) {
-      pikachu.image.src = "./Images/intento1-removebg-preview.png";
-    }
     switch (event.keyCode) {
       case 37: // left key
         controller.left = key_state;
@@ -247,6 +224,12 @@ function controllerGame() {
     pikachu.sh = 321;
     pikachu.x += pikachu.width / 4;
   }
+
+  if (!controller.left && !controller.right) {
+    pikachu.image.src = "./Images/pikachuStanding.png";
+    pikachu.sw = 244;
+    pikachu.sh = 256;
+  }
 }
 
 window.addEventListener("keydown", controller.keyListener);
@@ -265,6 +248,4 @@ window.onload = () => {
 };
 
 //Falta:
-// Arreglar que salga una sola plataforma a la vez
-// Cambiar de direccion a pikachu cuando se usen difentes comandos (usar un sprite por comando)
 //No funciona la funcion gameOver, por que?
