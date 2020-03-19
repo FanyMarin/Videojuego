@@ -92,7 +92,33 @@ class Platform {
   }
 }
 
-let pikachu = new Pikachu(90, 100, 60, 50);
+class Tears {
+  
+}
+
+class StartPlatform {
+  constructor() {
+    this.x = canvas.width/2-canvas.width * 0.1;
+    this.y = canvas.height/1.05;
+    this.width = canvas.width * 0.15;
+    this.height = 30;
+    this.image = new Image();
+    this.image.src = "./Images/platform.jpeg";
+  }
+
+  draw() {
+    this.y -= 3;
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    if (pikachu.collision(startPlatform)) {
+      pikachu.y = startPlatform.y - pikachu.height;
+    } else {
+      pikachu.y = pikachu.y + 2;
+    }
+  }
+}
+
+let startPlatform = new StartPlatform();
+let pikachu = new Pikachu(canvas.width/2-canvas.width * 0.1/2, canvas.height/1.05-50, 60, 50);
 let backround = new Background();
 
 //HELPER FUNCTIONS
@@ -172,6 +198,7 @@ function animate() {
   generatePlatforms2();
   generatePlatforms3();
   backround.draw();
+  startPlatform.draw();
   pikachu.draw();
   controllerGame();
   drawPlatforms();
