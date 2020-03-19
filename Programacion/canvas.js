@@ -44,12 +44,13 @@ class Pikachu {
     this.sy = 0;
     this.sw;
     this.sh;
+
     //gravity
     this.dy = 5;
   }
   draw() {
     this.y += this.dy + gravity;
-    if (this.sx > 1750) this.sx = 0;
+    if (this.sx > 240) this.sx = 0;
     ctx.drawImage(
       this.image,
       this.sx,
@@ -61,7 +62,7 @@ class Pikachu {
       this.width,
       this.height
     );
-    if (frames % 5 === 0) this.sx += 439;
+    if (frames % 4 === 0) this.sx += 62.5;
   }
 
   collision(item) {
@@ -212,23 +213,23 @@ controller = {
 
 function controllerGame() {
   if (controller.left && pikachu.x > 0 + 30) {
-    pikachu.image.src = "./Images/pikachuCorriendoIzq.png";
-    pikachu.sw = 439;
-    pikachu.sh = 321;
-    pikachu.x -= pikachu.width / 4;
+    pikachu.image.src = "./Images/pikachuLeft.png";
+    pikachu.sw = 62.5;
+    pikachu.sh = 40;
+    pikachu.x -= pikachu.width / 7;
   }
 
   if (controller.right && pikachu.x < canvas.width - 100) {
-    pikachu.image.src = "./Images/pikachuCorriendoSprite.png";
-    pikachu.sw = 439;
-    pikachu.sh = 321;
-    pikachu.x += pikachu.width / 4;
+    pikachu.image.src = "./Images/pikachuRight.png";
+    pikachu.sw = 62.5;
+    pikachu.sh = 40;
+    pikachu.x += pikachu.width / 7;
   }
 
   if (!controller.left && !controller.right) {
-    pikachu.image.src = "./Images/pikachuStanding.png";
-    pikachu.sw = 244;
-    pikachu.sh = 256;
+    pikachu.image.src = "./Images/pikachuFront.png";
+    pikachu.sw = 62.5;
+    pikachu.sh = 46;
   }
 }
 
