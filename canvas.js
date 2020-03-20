@@ -9,7 +9,7 @@ let tears = [];
 let points = 0;
 let requestId;
 let audio = new Audio();
-audio.src = "./Music/opening.mp3";
+audio.src = "./Music/Battle-music.mp3";
 audio.loop = true;
 const button = document.getElementById("start-button");
 
