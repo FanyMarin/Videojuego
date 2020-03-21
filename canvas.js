@@ -119,7 +119,7 @@ class StartPlatform {
 }
 
 class Tears {
-  constructor(x, y) {
+  constructor(x) {
     this.x = x;
     this.y = canvas.height;
     this.width = 25;
@@ -240,8 +240,8 @@ function drawPlatforms3() {
 function gameOver() {
   audio.pause();
   button.disabled = false;
-  // button.onclick = restart;
   requestId = undefined;
+  ctx.fillStyle = "black";
   ctx.font = "100px Avenir";
   ctx.fillText("Game Over", canvas.width / 2 - 250, canvas.height / 2);
 }
@@ -249,7 +249,6 @@ function gameOver() {
 function won() {
   audio.pause();
   button.disabled = false;
-  // button.onclick = restart;
   requestId = undefined;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.font = "100px Avenir";
@@ -349,7 +348,3 @@ window.onload = () => {
     requestId = requestAnimationFrame(animate);
   }
 };
-
-//Falta:
-//No funciona la funcion gameOver, por que?
-//como hacer para que pikachu no pueda seguir saltando?
