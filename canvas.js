@@ -163,7 +163,7 @@ function drawTears() {
       points += 1;
       tear.x = -25;
     }
-    if (points == 2) {
+    if (points == 1) {
       won();
     }
   });
